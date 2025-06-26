@@ -49,6 +49,9 @@
                         <a class="nav-link" href="{{ route('admin.questions.index') }}">Manajemen Soal</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ route('admin.settings.index') }}">Pengaturan Timer</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{{ route('admin.users.index') }}">Manajemen User</a>
                     </li>
                     <li class="nav-item">

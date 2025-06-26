@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\Admin\QuestionController;
 use App\Http\Controllers\Admin\SkorController;
+use App\Http\Controllers\Admin\SettingController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -50,6 +51,9 @@ Route::prefix('admin')->middleware('auth')->name('admin.')->group(function () {
     Route::get('/skor/export', [SkorController::class, 'export'])->name('skor.export');
     Route::delete('/skor/{id}', [SkorController::class, 'destroy'])->name('skor.destroy');
 });
+
+Route::get('/admin/settings', [SettingController::class, 'index'])->name('admin.settings.index');
+Route::post('/admin/settings', [SettingController::class, 'update'])->name('admin.settings.update');
 
 // Auth routes
 require __DIR__.'/auth.php';

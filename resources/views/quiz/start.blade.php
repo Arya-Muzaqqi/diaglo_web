@@ -60,7 +60,7 @@
         }
     </style>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 <nav class="navbar navbar-expand-lg">
     <div class="container">
         <a class="navbar-brand" href="#">DIAGLO QUIZ</a>
@@ -84,16 +84,19 @@
         <p>5. Gunakan tombol "Jawab & Lanjutkan" untuk menyimpan jawaban dan pindah ke soal berikutnya.</p>
         <p>6. Setelah selesai semua soal, Anda akan melihat skor akhir.</p>
         <p>7. Pastikan koneksi internet Anda stabil selama mengikuti kuis.</p>
+        <p>8. Pastikan mengerjakan soal sebelum waktunya selesai.</p>
         <p>Selamat mengerjakan dan semoga sukses!</p>
 
-        <div class="text-center mt-4">
-            <a href="/quiz" class="btn btn-primary">Mulai Kuis Sekarang</a>
-            <a href="{{ url('/peserta/dashboard') }}" class="btn btn-secondary">Kembali</a>
-        </div>
+    <div class="text-center mt-4">
+        <form method="POST" action="{{ route('quiz.begin') }}">
+            @csrf
+            <button type="submit" class="btn btn-primary">Mulai Kuis Sekarang</button>
+        </form>
+        <a href="{{ url('/peserta/dashboard') }}" class="btn btn-secondary mt-2">Kembali</a>
     </div>
-</div>
 
-<footer>
+
+<footer class="mt-auto bg-primary text-white text-center py-3">
     <p class="mb-0">© {{ date('Y') }} DIAGLO QUIZ. All rights reserved.</p>
 </footer>
 </body>

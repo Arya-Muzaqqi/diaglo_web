@@ -5,25 +5,28 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Question;
 use App\Models\Skor;
+use App\Models\Setting;
 use Illuminate\Support\Facades\Auth;
 
 class QuizController extends Controller
 {
-    // Tampilkan halaman petunjuk sebelum mulai kuis
     public function start()
     {
         return view('quiz.start');
     }
 
-    // Reset session dan mulai kuis
     public function begin(Request $request)
     {
-        $request->session()->forget(['current_question', 'answered', 'skor']);
+        $request->session()->forget(['current_question', 'answered', 'skor', 'end_time']);
         $request->session()->put('current_question', 0);
+
+        // Atur durasi dari setting
+        $durasi = Setting::first()->durasi_menit ?? 30;
+        $request->session()->put('end_time', now()->addMinutes($durasi)->timestamp);
+
         return redirect()->route('quiz.quiz');
     }
 
-    // Tampilkan soal berdasarkan sesi
     public function quiz(Request $request)
     {
         $questions = Question::with('reason')->get();
@@ -33,13 +36,19 @@ class QuizController extends Controller
             return redirect()->route('quiz.result');
         }
 
+        $endTime = session('end_time', now()->addMinutes(30)->timestamp);
+        $remainingSeconds = max(0, (int) round($endTime - now()->timestamp));
+
+        if ($remainingSeconds <= 0) {
+            return redirect()->route('quiz.result');
+        }
+
         $question = $questions[$current];
         $nomor = $current + 1;
 
-        return view('quiz.quiz', compact('question', 'questions', 'current', 'nomor'));
+        return view('quiz.quiz', compact('question', 'nomor', 'remainingSeconds'));
     }
 
-    // Proses jawaban peserta
     public function submit(Request $request)
     {
         $questionId = $request->input('question_id');
@@ -49,7 +58,6 @@ class QuizController extends Controller
 
         $question = Question::with('reason')->findOrFail($questionId);
 
-        // Logika penilaian two-tier
         $skorSoal = 0;
         $kategori = 'Tidak Paham';
 
@@ -59,29 +67,18 @@ class QuizController extends Controller
         if ($jawabanBenar && $alasanBenar) {
             $skorSoal = 2;
             $kategori = 'Paham Konsep';
-        } elseif ($jawabanBenar && !$alasanBenar) {
+        } elseif ($jawabanBenar) {
             $skorSoal = 1;
             $kategori = 'Miskonsepsi';
-        } else {
-            $skorSoal = 0;
-            $kategori = 'Tidak Paham';
         }
 
-        // Simpan ke tabel `skors`
         if (Auth::check()) {
             Skor::updateOrCreate(
-                [
-                    'user_id' => auth()->id(),
-                    'question_id' => $question->id
-                ],
-                [
-                    'nilai' => $skorSoal,
-                    'kategori' => $kategori,
-                ]
+                ['user_id' => auth()->id(), 'question_id' => $question->id],
+                ['nilai' => $skorSoal, 'kategori' => $kategori]
             );
         }
 
-        // Simpan jawaban ke session (opsional untuk result blade)
         $answered = $request->session()->get('answered', []);
         $answered[$question->id] = [
             'jawaban' => $jawaban,
@@ -91,28 +88,15 @@ class QuizController extends Controller
         ];
         $request->session()->put('answered', $answered);
 
-        // Tambah skor ke total session
         $skor = $request->session()->get('skor', 0);
         $skor += $skorSoal;
         $request->session()->put('skor', $skor);
 
-        // Lanjut soal berikutnya
-        $nextQuestionIndex = $nomor;
-        $request->session()->put('current_question', $nextQuestionIndex);
+        $request->session()->put('current_question', $nomor);
 
         return redirect()->route('quiz.quiz');
     }
 
-    // Tampilkan hasil akhir
-    public function result(Request $request)
-    {
-        $skor = $request->session()->get('skor', 0);
-        $answered = $request->session()->get('answered', []);
-
-        return view('quiz.result', compact('skor', 'answered'));
-    }
-
-    // Soal sebelumnya (jika ingin back)
     public function previous(Request $request)
     {
         $current = $request->session()->get('current_question', 0);
@@ -120,7 +104,13 @@ class QuizController extends Controller
             $current--;
             $request->session()->put('current_question', $current);
         }
-
         return redirect()->route('quiz.quiz');
+    }
+
+    public function result(Request $request)
+    {
+        $skor = $request->session()->get('skor', 0);
+        $answered = $request->session()->get('answered', []);
+        return view('quiz.result', compact('skor', 'answered'));
     }
 }
