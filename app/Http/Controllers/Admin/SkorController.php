@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Skor;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\SkorExport;
+use Carbon\Carbon; 
 
 class SkorController extends Controller
 {
@@ -28,7 +29,9 @@ class SkorController extends Controller
                     'name' => $user->name,
                     'email' => $user->email,
                     'total_skor' => $user->skors->sum('nilai'),
-                    'last_test_date' => $user->skors->first()->created_at ?? null,
+                    'last_test_date' => $user->skors->first()?->last_test_date
+                        ? \Carbon\Carbon::parse($user->skors->first()->last_test_date)
+                        : null,
                 ];
             });
 

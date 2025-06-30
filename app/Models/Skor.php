@@ -9,7 +9,8 @@ class Skor extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'question_id', 'nilai', 'kategori'];
+    protected $fillable = ['user_id', 'question_id', 'nilai', 'kategori', 'last_test_date'];
+
 
     public function user()
     {

@@ -10,23 +10,27 @@ use Illuminate\Support\Facades\Auth;
 
 class QuizController extends Controller
 {
+    // Halaman petunjuk
     public function start()
     {
         return view('quiz.start');
     }
 
+    // Reset session & mulai kuis
     public function begin(Request $request)
     {
         $request->session()->forget(['current_question', 'answered', 'skor', 'end_time']);
         $request->session()->put('current_question', 0);
 
-        // Atur durasi dari setting
+        // Ambil durasi dari tabel settings
         $durasi = Setting::first()->durasi_menit ?? 30;
-        $request->session()->put('end_time', now()->addMinutes($durasi)->timestamp);
+        $endTime = now()->addMinutes($durasi)->timestamp;
+        $request->session()->put('end_time', $endTime);
 
         return redirect()->route('quiz.quiz');
     }
 
+    // Menampilkan soal kuis sesuai sesi
     public function quiz(Request $request)
     {
         $questions = Question::with('reason')->get();
@@ -36,9 +40,13 @@ class QuizController extends Controller
             return redirect()->route('quiz.result');
         }
 
-        $endTime = session('end_time', now()->addMinutes(30)->timestamp);
-        $remainingSeconds = max(0, (int) round($endTime - now()->timestamp));
+        // Ambil waktu berakhir dari session
+        $endTime = $request->session()->get('end_time');
+        if (!$endTime) {
+            return redirect()->route('quiz.result'); // Jika session hilang
+        }
 
+        $remainingSeconds = max(0, $endTime - now()->timestamp);
         if ($remainingSeconds <= 0) {
             return redirect()->route('quiz.result');
         }
@@ -49,6 +57,7 @@ class QuizController extends Controller
         return view('quiz.quiz', compact('question', 'nomor', 'remainingSeconds'));
     }
 
+    // Proses jawaban soal
     public function submit(Request $request)
     {
         $questionId = $request->input('question_id');
@@ -72,6 +81,7 @@ class QuizController extends Controller
             $kategori = 'Miskonsepsi';
         }
 
+        // Simpan skor ke DB
         if (Auth::check()) {
             Skor::updateOrCreate(
                 ['user_id' => auth()->id(), 'question_id' => $question->id],
@@ -79,6 +89,7 @@ class QuizController extends Controller
             );
         }
 
+        // Simpan jawaban ke session
         $answered = $request->session()->get('answered', []);
         $answered[$question->id] = [
             'jawaban' => $jawaban,
@@ -88,15 +99,26 @@ class QuizController extends Controller
         ];
         $request->session()->put('answered', $answered);
 
+        // Tambah skor ke total
         $skor = $request->session()->get('skor', 0);
         $skor += $skorSoal;
         $request->session()->put('skor', $skor);
 
-        $request->session()->put('current_question', $nomor);
+        // Cek apakah soal terakhir
+        $questions = Question::all();
+        $nextIndex = $nomor;
+        $request->session()->put('current_question', $nextIndex);
+
+        if ($nextIndex >= $questions->count()) {
+            // Simpan tanggal tes terakhir
+            Skor::where('user_id', auth()->id())->update(['last_test_date' => now()]);
+            return redirect()->route('quiz.result');
+        }
 
         return redirect()->route('quiz.quiz');
     }
 
+    // Kembali ke soal sebelumnya
     public function previous(Request $request)
     {
         $current = $request->session()->get('current_question', 0);
@@ -107,6 +129,7 @@ class QuizController extends Controller
         return redirect()->route('quiz.quiz');
     }
 
+    // Tampilkan hasil akhir
     public function result(Request $request)
     {
         $skor = $request->session()->get('skor', 0);
