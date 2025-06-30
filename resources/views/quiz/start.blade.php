@@ -84,7 +84,7 @@
         <p>5. Gunakan tombol "Jawab & Lanjutkan" untuk menyimpan jawaban dan pindah ke soal berikutnya.</p>
         <p>6. Setelah selesai semua soal, Anda akan melihat skor akhir.</p>
         <p>7. Pastikan koneksi internet Anda stabil selama mengikuti kuis.</p>
-        <p>8. Pastikan mengerjakan soal sebelum waktunya selesai.</p>
+        <p>8. Pastikan mengerjakan soal sebelum timernya habis.</p>
         <p>Selamat mengerjakan dan semoga sukses!</p>
 
     <div class="text-center mt-4">
