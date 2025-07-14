@@ -15,34 +15,28 @@
             background-size: cover;
             font-family: Arial, sans-serif;
         }
-
         .wrapper {
             min-height: 100%;
             display: flex;
             flex-direction: column;
         }
-
         .content {
             flex: 1;
             padding-top: 40px;
             padding-bottom: 60px;
         }
-
         .table-wrapper {
             background-color: rgba(255, 255, 255, 0.9);
             padding: 30px;
             border-radius: 16px;
             box-shadow: 0 0 15px rgba(0,0,0,0.3);
         }
-
         .btn-primary, .btn-secondary, .btn-warning, .btn-danger {
             border-radius: 8px;
         }
-
         .btn-danger {
             color: white;
         }
-
         footer {
             background-color: rgba(0, 123, 255, 0.8);
             color: white;
@@ -67,6 +61,13 @@
                 <div class="alert alert-success">{{ session('success') }}</div>
             @endif
 
+            @php
+                // Fungsi untuk mengganti ^angka menjadi <sup>angka</sup>
+                function formatSup($text) {
+                    return preg_replace('/\^(\d+)/', '<sup>$1</sup>', e($text));
+                }
+            @endphp
+
             <table class="table table-bordered table-striped">
                 <thead class="table-primary">
                     <tr>
@@ -82,7 +83,7 @@
                     @foreach ($questions as $index => $q)
                         <tr>
                             <td>{{ $index + 1 }}</td>
-                            <td>{{ $q->pertanyaan }}</td>
+                            <td>{!! formatSup($q->pertanyaan) !!}</td>
                             <td>
                                 @if ($q->media)
                                     @if(Str::endsWith($q->media, ['.mp4']))
@@ -99,7 +100,7 @@
                             <td>{{ strtoupper($q->jawaban_benar) }}</td>
                             <td>
                                 @if($q->reason)
-                                    {{ $q->reason->alasan }}<br>
+                                    {!! formatSup($q->reason->alasan) !!}<br>
                                     <small>Jawaban: <strong>{{ strtoupper($q->reason->jawaban_benar) }}</strong></small>
                                 @else
                                     <span class="text-danger">Belum Ada</span>

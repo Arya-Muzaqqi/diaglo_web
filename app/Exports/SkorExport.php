@@ -14,8 +14,9 @@ class SkorExport implements FromCollection, WithHeadings
             return [
                 'Nama Peserta' => $skor->user->name ?? '-',
                 'ID Soal' => $skor->question_id ?? '-',
-                'Nilai' => $skor->nilai ?? 0,
+                'Nilai' => strval($skor->nilai ?? 0),
                 'Kategori Pemahaman' => $skor->kategori ?? '-',
+                'Waktu' => $skor->last_test_date ?? '-',
             ];
         });
     }
@@ -26,7 +27,8 @@ class SkorExport implements FromCollection, WithHeadings
             'Nama Peserta',
             'ID Soal',
             'Nilai',
-            'Kategori Pemahaman'
+            'Kategori Pemahaman',
+            'Waktu'
         ];
     }
 }

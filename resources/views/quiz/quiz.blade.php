@@ -25,7 +25,11 @@
             font-weight: bold;
             font-size: 18px;
             color: red;
-            float: right;
+        }
+
+        video, img {
+            max-height: 320px;
+            object-fit: contain;
         }
     </style>
 </head>
@@ -44,7 +48,7 @@
     <div class="quiz-container">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h4>Soal No. {{ $nomor }}</h4>
-            <div id="timer"></div>
+            <div id="timer">00:00</div>
         </div>
 
         <form action="{{ route('quiz.submit') }}" method="POST">
@@ -64,24 +68,24 @@
                 </div>
             @endif
 
-            <p><strong>{{ $question->pertanyaan }}</strong></p>
+            <p id="pertanyaan"><strong>{{ $question->pertanyaan }}</strong></p>
 
             @foreach($question->opsi as $key => $opsi)
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="jawaban" id="jawaban_{{ $key }}" value="{{ $key }}">
+                    <input class="form-check-input" type="radio" name="jawaban" id="jawaban_{{ $key }}" value="{{ $key }}" required>
                     <label class="form-check-label" for="jawaban_{{ $key }}">
-                        <strong>{{ strtoupper($key) }}.</strong> {{ $opsi }}
+                        <strong>{{ strtoupper($key) }}.</strong> <span class="convert-super">{{ $opsi }}</span>
                     </label>
                 </div>
             @endforeach
 
             @if($question->reason)
-                <p class="mt-4"><strong>{{ $question->reason->alasan }}</strong></p>
+                <p class="mt-4"><strong id="alasan-utama">{{ $question->reason->alasan }}</strong></p>
                 @foreach($question->reason->opsi as $key => $opsi)
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="jawaban_alasan" id="alasan_{{ $key }}" value="{{ $key }}">
+                        <input class="form-check-input" type="radio" name="jawaban_alasan" id="alasan_{{ $key }}" value="{{ $key }}" required>
                         <label class="form-check-label" for="alasan_{{ $key }}">
-                            <strong>{{ strtoupper($key) }}.</strong> {{ $opsi }}
+                            <strong>{{ strtoupper($key) }}.</strong> <span class="convert-super">{{ $opsi }}</span>
                         </label>
                     </div>
                 @endforeach
@@ -112,8 +116,39 @@
         totalSeconds--;
     }
 
-    updateTimer(); // show first second immediately
+    updateTimer(); 
     const timerInterval = setInterval(updateTimer, 1000);
+
+    // Fungsi konversi ^2 menjadi ², ^3 menjadi ³, dll
+    function convertSuperscript(text) {
+        return text
+            .replace(/\^2/g, '²')
+            .replace(/\^3/g, '³')
+            .replace(/\^1/g, '¹')
+            .replace(/\^0/g, '⁰')
+            .replace(/\^4/g, '⁴')
+            .replace(/\^5/g, '⁵')
+            .replace(/\^6/g, '⁶')
+            .replace(/\^7/g, '⁷')
+            .replace(/\^8/g, '⁸')
+            .replace(/\^9/g, '⁹');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.convert-super').forEach(el => {
+            el.innerText = convertSuperscript(el.innerText);
+        });
+
+        const pertanyaanEl = document.getElementById('pertanyaan');
+        if (pertanyaanEl) {
+            pertanyaanEl.innerHTML = convertSuperscript(pertanyaanEl.innerHTML);
+        }
+
+        const alasanUtama = document.getElementById('alasan-utama');
+        if (alasanUtama) {
+            alasanUtama.innerHTML = convertSuperscript(alasanUtama.innerHTML);
+        }
+    });
 </script>
 
 </body>
