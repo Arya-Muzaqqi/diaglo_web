@@ -16,7 +16,7 @@ class SkorExport implements FromCollection, WithHeadings
                 'ID Soal' => $skor->question_id ?? '-',
                 'Nilai' => strval($skor->nilai ?? 0),
                 'Kategori Pemahaman' => $skor->kategori ?? '-',
-                'Waktu' => $skor->last_test_date ?? '-',
+                'Waktu' => $skor->created_at ? $skor->created_at->format('d-m-Y H:i') : '-',
             ];
         });
     }
