@@ -87,7 +87,7 @@
 <div class="dashboard-content text-center">
     <div class="container">
         <h1 class="mb-3">Dashboard Peserta</h1>
-        <p class="lead">Halo, {{ Auth::user()->name }}, kelas {{ Auth::user()->kelas ?? '-' }}! Selamat datang di DIAGLO</p>
+        <p class="lead">Halo, {{ Auth::user()->name }}, kelas {{ Auth::user()->kelas ?? '-' }} ! Selamat datang di DIAGLO</p>
 
         <div class="mt-4">
             <a href="{{ route('quiz.start') }}" class="btn-custom">Mulai Kuis</a>
