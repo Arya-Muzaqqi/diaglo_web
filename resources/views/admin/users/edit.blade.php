@@ -43,6 +43,10 @@
     <div class="card shadow p-4">
         <h1 class="mb-4">Edit User #{{ $user->id }}</h1>
 
+        @if (session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
+
         @if ($errors->any())
         <div class="alert alert-danger">
             <ul class="mb-0">
@@ -85,13 +89,48 @@
                 </select>
             </div>
 
+            <hr>
+
+            <div class="mb-3">
+                <label for="jenis_kelamin" class="form-label">Jenis Kelamin</label>
+                <select name="jenis_kelamin" id="jenis_kelamin" class="form-control">
+                    <option value="Laki-laki" {{ old('jenis_kelamin', $user->jenis_kelamin) == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                    <option value="Perempuan" {{ old('jenis_kelamin', $user->jenis_kelamin) == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="alamat" class="form-label">Alamat</label>
+                <textarea name="alamat" id="alamat" class="form-control">{{ old('alamat', $user->alamat) }}</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="asal_sekolah" class="form-label">Asal Sekolah</label>
+                <input type="text" name="asal_sekolah" id="asal_sekolah" class="form-control" value="{{ old('asal_sekolah', $user->asal_sekolah) }}">
+            </div>
+
+            <div class="mb-3">
+                <label for="kelas" class="form-label">Kelas</label>
+                <input type="text" name="kelas" id="kelas" class="form-control" value="{{ old('kelas', $user->kelas) }}">
+            </div>
+
+            <div class="mb-3">
+                <label for="pekerjaan_ortu" class="form-label">Pekerjaan Orang Tua</label>
+                <input type="text" name="pekerjaan_ortu" id="pekerjaan_ortu" class="form-control" value="{{ old('pekerjaan_ortu', $user->pekerjaan_ortu) }}">
+            </div>
+
+            <div class="mb-3">
+                <label for="suku" class="form-label">Suku</label>
+                <input type="text" name="suku" id="suku" class="form-control" value="{{ old('suku', $user->suku) }}">
+            </div>
+
             <button type="submit" class="btn btn-primary">Update User</button>
             <a href="{{ route('admin.users.index') }}" class="btn btn-secondary">Kembali</a>
         </form>
     </div>
 </div>
 
-<footer class="text-center mt-5 py-3" style="background-color:#3399ff; color:white;">
+<footer class="text-center mt-5 py-3">
     <p class="mb-0">© {{ date('Y') }} DIAGLO QUIZ. All rights reserved.</p>
 </footer>
 </body>

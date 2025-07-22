@@ -25,16 +25,17 @@
         .dashboard-content {
             padding: 60px 20px;
             min-height: 100vh;
-            background-color: rgba(0, 0, 0, 0.4); /* optional semi-transparent overlay */
+            background-color: rgba(0, 0, 0, 0.4);
         }
 
         .btn-custom {
             background-color: #007bff;
             color: white;
-            padding: 10px 20px;
+            padding: 12px 24px;
+            font-size: 18px;
             border: none;
             border-radius: 8px;
-            margin-right: 10px;
+            margin: 10px;
             text-decoration: none;
         }
 
@@ -47,12 +48,24 @@
             color: #007bff;
         }
 
+        .edit-profile {
+            margin-right: 10px;
+        }
+
         footer {
             background-color: rgba(0, 123, 255, 0.8);
             color: white;
             text-align: center;
             padding: 15px;
             flex-shrink: 0;
+        }
+
+        h1, .lead {
+            font-size: 28px;
+        }
+
+        .lead {
+            font-size: 20px;
         }
     </style>
 </head>
@@ -61,15 +74,12 @@
 <nav class="navbar navbar-expand-lg">
     <div class="container">
         <a class="navbar-brand" href="#">DIAGLO QUIZ</a>
-        <div class="ms-auto">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
-                    </form>
-                </li>
-            </ul>
+        <div class="ms-auto d-flex">
+            <a href="{{ route('peserta.profile.edit') }}" class="btn btn-outline-light btn-sm edit-profile">Edit Profil</a>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
+            </form>
         </div>
     </div>
 </nav>
@@ -77,7 +87,7 @@
 <div class="dashboard-content text-center">
     <div class="container">
         <h1 class="mb-3">Dashboard Peserta</h1>
-        <p class="lead">Halo, {{ Auth::user()->name }}! Selamat datang di DIAGLO</p>
+        <p class="lead">Halo, {{ Auth::user()->name }}, kelas {{ Auth::user()->kelas ?? '-' }}! Selamat datang di DIAGLO</p>
 
         <div class="mt-4">
             <a href="{{ route('quiz.start') }}" class="btn-custom">Mulai Kuis</a>

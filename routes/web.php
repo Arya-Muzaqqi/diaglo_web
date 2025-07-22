@@ -5,6 +5,7 @@ use App\Http\Controllers\QuizController;
 use App\Http\Controllers\Admin\QuestionController;
 use App\Http\Controllers\Admin\SkorController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Peserta\ProfileController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -32,6 +33,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/quiz/submit', [QuizController::class, 'submit'])->name('quiz.submit'); 
     Route::get('/quiz/result', [QuizController::class, 'result'])->name('quiz.result');
     Route::get('/quiz/previous', [QuizController::class, 'previous'])->name('quiz.previous');
+
+    
+    Route::get('/peserta/profile/edit', [ProfileController::class, 'edit'])->name('peserta.profile.edit');
+    Route::post('/peserta/profile/update', [ProfileController::class, 'update'])->name('peserta.profile.update');
 });
 
 // Admin routes
